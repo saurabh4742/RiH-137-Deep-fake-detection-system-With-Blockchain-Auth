@@ -136,7 +136,6 @@ import pickle
 #         st.write('The image is a **Real Image**.', color='green')
 
 
-
 import streamlit as st
 from PIL import Image
 import numpy as np
