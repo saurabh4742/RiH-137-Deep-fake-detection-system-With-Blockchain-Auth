@@ -31,7 +31,7 @@ st.markdown("""
 
 ## trained model
 try:
-    model = tf.keras.models.load_model('xception_deepfake_image.h5')
+    model = tf.keras.models.load_model('xception_deepfake_image.h5','r')
     print("Model loaded successfully")
 except Exception as e:
     print(f"Error loading model: {e}")
