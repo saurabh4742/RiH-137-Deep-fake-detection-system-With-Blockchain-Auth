@@ -111,3 +111,9 @@ numpy
 pillow
 pip
 streamlit
+tensorflow==2.16.2
+opencv-python-headless
+numpy
+pillow
+pip==24.2
+
