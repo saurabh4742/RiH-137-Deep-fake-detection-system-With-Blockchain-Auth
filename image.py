@@ -167,12 +167,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Load the trained model
+model = None
 try:
     model = tf.keras.models.load_model('xception_deepfake_image.h5')
     st.write("Model loaded successfully")
 except Exception as e:
     st.error(f"Error loading model: {e}")
-    model = None
 
 # Function to preprocess the image
 def preprocess_image(image):
