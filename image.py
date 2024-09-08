@@ -4,6 +4,7 @@
 # import tensorflow as tf
 # import cv2
 # from tensorflow.keras.models import load_model
+# import pickle
 
 # ## setting up the page configuration with title and icon
 # st.set_page_config(page_title="Deep Fake Detector Tool", page_icon="🕵️‍♂️")
@@ -135,16 +136,13 @@
 #         st.write('The image is a **Real Image**.', color='green')
 
 
-
-
-### streamlit-github-modified code
-
 import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
-import os
-import requests
+import cv2
+from tensorflow.keras.models import load_model
+import pickle
 
 ## setting up the page configuration with title and icon
 st.set_page_config(page_title="Deep Fake Detector Tool", page_icon="🕵️‍♂️")
@@ -170,48 +168,25 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-## function to download and load the model
-def download_model(url, save_path):
-    response = requests.get(url)
-    if response.status_code == 200:
-        with open(save_path, 'wb') as f:
-            f.write(response.content)
-        print("Model downloaded successfully")
-    else:
-        raise Exception(f"Failed to download model. Status code: {response.status_code}")
+## Load the pickled model
+try:
+    with open('xception_deepfake_image.pkl', 'rb') as file:
+        model = pickle.load(file)
+    st.write("Model loaded successfully")
+except Exception as e:
+    st.error(f"Error loading model: {e}")
 
-def load_model():
-    model_path = 'xception_deepfake_image.h5'
-    if not os.path.exists(model_path):
-        model_url = 'https://github.com/RiH-137/RiH-137-Deep-fake-detection-system-With-Blockchain-Auth/raw/main/xception_deepfake_image.h5'
-        try:
-            download_model(model_url, model_path)
-        except Exception as e:
-            st.error(f"Error downloading model: {e}")
-            print(f"Error downloading model: {e}")
-            return None
-
-    try:
-        model = tf.keras.models.load_model(model_path)
-        print("Model loaded successfully")
-        return model
-    except Exception as e:
-        st.error(f"Error loading model: {e}")
-        print(f"Error loading model: {e}")
-        return None
-
-model = load_model()
-
-## function to preprocess the image
+## Function to preprocess the image
 def preprocess_image(image):
-    image = image.resize((299, 299))                       ## resize the image to match the input size expected by the model
+    image = image.resize((299, 299))  # Resize the image to match the input size expected by the model
     image = np.array(image)
-    image = image.astype('float32') / 255.0                  ## normalize the image to [0, 1]
-    image = np.expand_dims(image, axis=0)                    ## add a batch dimension
+    image = image.astype('float32') / 255.0  # Normalize the image to [0, 1]
+    image = np.expand_dims(image, axis=0)  # Add a batch dimension
     return image
 
-## function to predict if an image is deep fake or real
+## Function to predict if an image is deep fake or real
 def predict(image):
+    global model
     if model is None:
         st.error("Model is not loaded properly. Please check the model file.")
         return None
@@ -219,21 +194,21 @@ def predict(image):
     st.write("Model is loaded. Processing image...")
     processed_image = preprocess_image(image)
     try:
-        prediction = model.predict(processed_image)
+        prediction = model.predict(processed_image)  # This will depend on the model type
         st.write(f"Prediction made successfully: {prediction}")
         return prediction[0][0]  # Return the probability
     except Exception as e:
         st.error(f"Error during prediction: {e}")
         return None
 
-## chatbot 
+## Chatbot
 def chatbot_response(user_input):
     user_input = user_input.lower()
     
     if "hello" in user_input:
         return "Hi there! How can I assist you today?"
     
-    elif "deep fake" in user_input or "deepfake" in user_input:
+    elif "deep fake" or "deepfake" in user_input:
         return "Deep fakes are AI-generated media that can manipulate real video or audio to mislead viewers. I can help you detect them in images or videos."
     
     elif "ethics" in user_input:
@@ -267,12 +242,11 @@ def chatbot_response(user_input):
     else:
         return "I'm not sure how to respond to that. Could you ask something else?"
 
-## streamlit app layout
-
-if st.button('Go to Deepfake-video-destroyed'):
+## Streamlit app layout
+if st.button('Go to Deepfake-video-distroyed'):
     st.write("[Click here to go to Google](https://www.google.com)")
 
-## chatbot sidebar
+## Chatbot sidebar
 st.sidebar.title('Chatbot Support')
 st.sidebar.write("Ask me anything related to deep fake detection, AI ethics, the legal use of AI, or how this project works!")
 user_input = st.sidebar.text_input("You:", key="user_input")
@@ -282,19 +256,18 @@ if user_input:
 
 st.write('Upload an image to check whether it is a deep fake or not.')
 
-## upload image
+## Upload image
 uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_image is not None:
-
-    ## displaying the uploaded image
+    ## Displaying the uploaded image
     image = Image.open(uploaded_image)
     st.image(image, caption='Uploaded Image', use_column_width=True)
 
-    ## predict if the image is a deep fake
+    ## Predict if the image is a deep fake
     prediction = predict(image)
-    if prediction is not None:
-        if prediction > 0.4:
-            st.write('The image is a **DEEP FAKE**.', color='red')
-        else:
-            st.write('The image is a **Real Image**.', color='green')
+    if prediction > 0.4:
+        st.write('The image is a **DEEP FAKE**.', color='red')
+    else:
+        st.write('The image is a **Real Image**.', color='green')
+
