@@ -167,7 +167,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Load the trained model
-model_path = r"C:\\Users\\101ri\\OneDrive\Desktop\\New DeepFake\\xception_deepfake_image.h5"
+model_path = r"xception_deepfake_image.h5"
 if not os.path.isfile(model_path):
     st.error(f"Model file not found at path: {model_path}")
 else:
