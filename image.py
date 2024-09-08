@@ -139,11 +139,12 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
-import cv2
+import os
 
 ## setting up the page configuration with title and icon
 st.set_page_config(page_title="Deep Fake Detector Tool", page_icon="🕵️‍♂️")
 st.write("Tenet Presents")
+
 ## add a banner
 st.markdown("""
     <style>
@@ -167,11 +168,17 @@ st.markdown("""
 ## function to load the model
 @st.cache_resource
 def load_model():
+    model_path = 'xception_deepfake_image.h5'
+    if not os.path.exists(model_path):
+        st.error(f"Model file not found: {model_path}")
+        return None
     try:
-        model = tf.keras.models.load_model('xception_deepfake_image.h5')
+        model = tf.keras.models.load_model(model_path)
+        print("Model loaded successfully")
         return model
     except Exception as e:
         st.error(f"Error loading model: {e}")
+        print(f"Error loading model: {e}")
         return None
 
 model = load_model()
@@ -180,8 +187,8 @@ model = load_model()
 def preprocess_image(image):
     image = image.resize((299, 299))                       ## resize the image to match the input size expected by the model
     image = np.array(image)
-    image = image.astype('float32') / 255.0                  ##normalize the image to [0, 1]
-    image = np.expand_dims(image, axis=0)                    ##add a batch dimension
+    image = image.astype('float32') / 255.0                  ## normalize the image to [0, 1]
+    image = np.expand_dims(image, axis=0)                    ## add a batch dimension
     return image
 
 ## function to predict if an image is deep fake or real
