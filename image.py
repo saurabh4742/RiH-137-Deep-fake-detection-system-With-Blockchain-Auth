@@ -203,7 +203,7 @@ def predict(image):
         st.error(f"Error during prediction: {e}")
         return None
 
-# Chatbot response
+# Chatbot response function
 def chatbot_response(user_input):
     user_input = user_input.lower()
     
