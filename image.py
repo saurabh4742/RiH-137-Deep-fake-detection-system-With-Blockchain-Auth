@@ -135,11 +135,16 @@
 #         st.write('The image is a **Real Image**.', color='green')
 
 
+
+
+### streamlit-github-modified code
+
 import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
 import os
+import requests
 
 ## setting up the page configuration with title and icon
 st.set_page_config(page_title="Deep Fake Detector Tool", page_icon="🕵️‍♂️")
@@ -165,13 +170,27 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-## function to load the model
-@st.cache_resource
+## function to download and load the model
+def download_model(url, save_path):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(save_path, 'wb') as f:
+            f.write(response.content)
+        print("Model downloaded successfully")
+    else:
+        raise Exception(f"Failed to download model. Status code: {response.status_code}")
+
 def load_model():
     model_path = 'xception_deepfake_image.h5'
     if not os.path.exists(model_path):
-        st.error(f"Model file not found: {model_path}")
-        return None
+        model_url = 'https://github.com/RiH-137/RiH-137-Deep-fake-detection-system-With-Blockchain-Auth/raw/main/xception_deepfake_image.h5'
+        try:
+            download_model(model_url, model_path)
+        except Exception as e:
+            st.error(f"Error downloading model: {e}")
+            print(f"Error downloading model: {e}")
+            return None
+
     try:
         model = tf.keras.models.load_model(model_path)
         print("Model loaded successfully")
