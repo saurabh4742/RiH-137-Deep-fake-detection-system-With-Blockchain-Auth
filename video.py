@@ -72,7 +72,7 @@ def chatbot_response(user_input):
     if "hello" in user_input:
         return "Hi there! How can I assist you today?"
     
-    elif "deep fake" in user_input:
+    elif "deep fake" or "deepfake" in user_input:
         return "Deep fakes are AI-generated media that can manipulate real video or audio to mislead viewers. I can help you detect them in images or videos."
     
     elif "ethics" in user_input:
