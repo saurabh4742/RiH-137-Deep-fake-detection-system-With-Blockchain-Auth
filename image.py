@@ -137,6 +137,12 @@ import pickle
 
 
 
+import streamlit as st
+from PIL import Image
+import numpy as np
+import tensorflow as tf
+
+# Setting up the page configuration with title and icon
 st.set_page_config(page_title="Deep Fake Detector Tool", page_icon="🕵️‍♂️")
 st.write("Tenet Presents")
 
@@ -166,13 +172,14 @@ try:
     st.write("Model loaded successfully")
 except Exception as e:
     st.error(f"Error loading model: {e}")
+    model = None
 
 # Function to preprocess the image
 def preprocess_image(image):
-    image = image.resize((299, 299))  # Resize the image to match the input size expected by the model
+    image = image.resize((299, 299))  # Resize to match model input
     image = np.array(image)
-    image = image.astype('float32') / 255.0  # Normalize the image to [0, 1]
-    image = np.expand_dims(image, axis=0)  # Add a batch dimension
+    image = image.astype('float32') / 255.0  # Normalize
+    image = np.expand_dims(image, axis=0)  # Add batch dimension
     return image
 
 # Function to predict if an image is deep fake or real
@@ -261,4 +268,3 @@ if uploaded_image is not None:
             st.markdown('<p style="color:red;">The image is a <strong>DEEP FAKE</strong>.</p>', unsafe_allow_html=True)
         else:
             st.markdown('<p style="color:green;">The image is a <strong>Real Image</strong>.</p>', unsafe_allow_html=True)
-
