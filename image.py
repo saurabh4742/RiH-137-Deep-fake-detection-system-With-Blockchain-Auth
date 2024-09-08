@@ -141,6 +141,7 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
+import os
 
 # Setting up the page configuration with title and icon
 st.set_page_config(page_title="Deep Fake Detector Tool", page_icon="🕵️‍♂️")
@@ -167,12 +168,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Load the trained model
-model = None
-try:
-    model = tf.keras.models.load_model('xception_deepfake_image.h5')
-    st.write("Model loaded successfully")
-except Exception as e:
-    st.error(f"Error loading model: {e}")
+model_path = 'xception_deepfake_image.h5'
+if not os.path.isfile(model_path):
+    st.error(f"Model file not found at path: {model_path}")
+else:
+    try:
+        model = tf.keras.models.load_model(model_path)
+        st.write("Model loaded successfully")
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        model = None
 
 # Function to preprocess the image
 def preprocess_image(image):
