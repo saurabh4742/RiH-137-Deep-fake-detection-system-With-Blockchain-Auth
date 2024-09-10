@@ -165,36 +165,28 @@
 import streamlit as st
 import tensorflow as tf
 import requests
-import os
 import numpy as np
 from PIL import Image
+import io
 
-# Set the URL for the model file in cloud storage
-MODEL_URL = 'https://your-storage-url/xception_deepfake_image.h5'
-MODEL_PATH = 'xception_deepfake_image.h5'
+# Set the page configuration at the very beginning
+st.set_page_config(page_title="Deep Fake Detector Tool", page_icon="🕵️‍♂️")
 
-def download_model(url, save_path):
-    """Download model from external storage."""
-    response = requests.get(url)
-    if response.status_code == 200:
-        with open(save_path, 'wb') as f:
-            f.write(response.content)
-        st.success("Model downloaded successfully.")
-    else:
-        st.error(f"Failed to download model. Status code: {response.status_code}")
+# Define the URL for the model file in your GitHub repository
+MODEL_URL = 'https://github.com/RiH-137/RiH-137-Deep-fake-detection-system-With-Blockchain-Auth/raw/main/xception_deepfake_image.h5'
 
-@st.cache_resource
 def load_model():
-    """Load the model from file or download if not present."""
-    # Download the model if not present
-    if not os.path.isfile(MODEL_PATH):
-        st.write("Model file not found locally. Downloading...")
-        download_model(MODEL_URL, MODEL_PATH)
-    
+    """Load the model from GitHub repository."""
     try:
-        model = tf.keras.models.load_model(MODEL_PATH)
-        st.success("Model loaded successfully.")
-        return model
+        st.write("Loading model...")
+        response = requests.get(MODEL_URL)
+        if response.status_code == 200:
+            model_file = io.BytesIO(response.content)
+            model = tf.keras.models.load_model(model_file)
+            st.success("Model loaded successfully.")
+            return model
+        else:
+            st.error(f"Failed to download model. Status code: {response.status_code}")
     except IOError as e:
         st.error(f"IOError: Unable to find or open the model file. {e}")
     except tf.errors.OpError as e:
@@ -252,30 +244,6 @@ def chatbot_response(user_input):
     }
     
     return responses.get(user_input, "I'm not sure how to respond to that. Could you ask something else?")
-
-# Streamlit app layout
-st.set_page_config(page_title="Deep Fake Detector Tool", page_icon="🕵️‍♂️")
-st.write("Tenet Presents")
-
-# Add a banner
-st.markdown("""
-    <style>
-        .banner {
-            background-color: #f8f9fa;
-            padding: 10px;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .banner h1 {
-            color: #343a40;
-            margin: 0;
-        }
-    </style>
-    <div class="banner">
-        <h1>Deep Fake Detector Tool</h1>
-    </div>
-""", unsafe_allow_html=True)
 
 # Chatbot sidebar
 st.sidebar.title('Chatbot Support')
