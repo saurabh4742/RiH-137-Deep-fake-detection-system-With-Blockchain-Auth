@@ -32,14 +32,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 ## trained model
-try:
-    model = tf.keras.models.load_model('xception_deepfake_image.h5','r')
-    print("Model loaded successfully")
-except Exception as e:
-    print(f"Error loading model: {e}")
+# try:
+#     model = tf.keras.models.load_model('xception_deepfake_image.h5','r')
+#     print("Model loaded successfully")
+# except Exception as e:
+#     print(f"Error loading model: {e}")
 
-model = tf.keras.models.load_model('xception_deepfake_image.h5')
-https://github.com/RiH-137/RiH-137-Deep-fake-detection-system-With-Blockchain-Auth/blob/main/xception_deepfake_image.h5
+# model = tf.keras.models.load_model('xception_deepfake_image.h5')
+# https://github.com/RiH-137/RiH-137-Deep-fake-detection-system-With-Blockchain-Auth/blob/main/xception_deepfake_image.h5
+
+
 def load_model():
     try:
         model = tf.keras.models.load_model('xception_deepfake_image.h5')
