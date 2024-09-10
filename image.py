@@ -5,7 +5,7 @@ import tensorflow as tf
 import cv2
 from tensorflow.keras.models import load_model
 import pickle
-import os
+# import os
 
 
 ## setting up the page configuration with title and icon
@@ -32,30 +32,30 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 ## trained model
-# try:
-#     model = tf.keras.models.load_model('xception_deepfake_image.h5','r')
-#     print("Model loaded successfully")
-# except Exception as e:
-#     print(f"Error loading model: {e}")
+try:
+    model = tf.keras.models.load_model('xception_deepfake_image.h5','r')
+    print("Model loaded successfully")
+except Exception as e:
+    print(f"Error loading model: {e}")
 
-# model = tf.keras.models.load_model('xception_deepfake_image.h5')
-# https://github.com/RiH-137/RiH-137-Deep-fake-detection-system-With-Blockchain-Auth/blob/main/xception_deepfake_image.h5
-# def load_model():
-#     try:
-#         model = tf.keras.models.load_model('xception_deepfake_image.h5')
-#         return model
-#     except Exception as e:
-#         st.error(f"Error loading model: {e}")
+model = tf.keras.models.load_model('xception_deepfake_image.h5')
+https://github.com/RiH-137/RiH-137-Deep-fake-detection-system-With-Blockchain-Auth/blob/main/xception_deepfake_image.h5
+def load_model():
+    try:
+        model = tf.keras.models.load_model('xception_deepfake_image.h5')
+        return model
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
 
-# model = load_model()
-
-
-import subprocess
-if not os.path.isfile('xception_deepfake_image.h5'):
-    subprocess.run(['curl --output model.h5 "https://media.githubusercontent.com/media/ShyamaleeT/glaucocare/main/sep_5.h5"'], shell=True)
+model = load_model()
 
 
-model = tf.keras.models.load_model('xception_deepfake_image.h5', compile=False)
+# import subprocess
+# if not os.path.isfile('xception_deepfake_image.h5'):
+#     subprocess.run(['curl --output model.h5 "https://media.githubusercontent.com/media/ShyamaleeT/glaucocare/main/sep_5.h5"'], shell=True)
+
+
+# model = tf.keras.models.load_model('xception_deepfake_image.h5', compile=False)
 
 
 
