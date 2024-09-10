@@ -5,6 +5,7 @@ import tensorflow as tf
 import cv2
 from tensorflow.keras.models import load_model
 import pickle
+import joblib
 
 ## setting up the page configuration with title and icon
 st.set_page_config(page_title="Deep Fake Detector Tool", page_icon="🕵️‍♂️")
@@ -36,7 +37,19 @@ st.markdown("""
 # except Exception as e:
 #     print(f"Error loading model: {e}")
 
-model = tf.keras.models.load_model('xception_deepfake_image.h5')
+# model = tf.keras.models.load_model('xception_deepfake_image.h5')
+# https://github.com/RiH-137/RiH-137-Deep-fake-detection-system-With-Blockchain-Auth/blob/main/xception_deepfake_image.h5
+def load_model():
+    try:
+        model = joblib.load('xception_deepfake_image.h5')
+        return model
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+
+model = load_model()
+
+
+
 
 ## function to preprocess the image
 def preprocess_image(image):
