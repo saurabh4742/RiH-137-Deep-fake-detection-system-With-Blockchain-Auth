@@ -162,64 +162,64 @@
 #         st.write('The image is a **Real Image**.', color='green')
 
 
-
 import streamlit as st
-from PIL import Image
-import numpy as np
 import tensorflow as tf
+import requests
+import os
+import numpy as np
+from PIL import Image
 
-# Setting up the page configuration with title and icon
-st.set_page_config(page_title="Deep Fake Detector Tool", page_icon="🕵️‍♂️")
-st.write("Tenet Presents")
+# Set the URL for the model file in cloud storage
+MODEL_URL = 'https://your-storage-url/xception_deepfake_image.h5'
+MODEL_PATH = 'xception_deepfake_image.h5'
 
-# Add a banner
-st.markdown("""
-    <style>
-        .banner {
-            background-color: #f8f9fa;
-            padding: 10px;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .banner h1 {
-            color: #343a40;
-            margin: 0;
-        }
-    </style>
-    <div class="banner">
-        <h1>Deep Fake Detector Tool</h1>
-    </div>
-""", unsafe_allow_html=True)
+def download_model(url, save_path):
+    """Download model from external storage."""
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(save_path, 'wb') as f:
+            f.write(response.content)
+        st.success("Model downloaded successfully.")
+    else:
+        st.error(f"Failed to download model. Status code: {response.status_code}")
 
-# Load model function
 @st.cache_resource
 def load_model():
+    """Load the model from file or download if not present."""
+    # Download the model if not present
+    if not os.path.isfile(MODEL_PATH):
+        st.write("Model file not found locally. Downloading...")
+        download_model(MODEL_URL, MODEL_PATH)
+    
     try:
-        model = tf.keras.models.load_model('xception_deepfake_image.h5')
-        st.success("Model loaded successfully")
+        model = tf.keras.models.load_model(MODEL_PATH)
+        st.success("Model loaded successfully.")
         return model
+    except IOError as e:
+        st.error(f"IOError: Unable to find or open the model file. {e}")
+    except tf.errors.OpError as e:
+        st.error(f"TensorFlow Error: {e}. This may indicate a problem with the model file or TensorFlow version compatibility.")
     except Exception as e:
-        st.error(f"Error loading model: {e}")
-        return None
+        st.error(f"An unexpected error occurred while loading the model: {e}")
+    return None
 
 model = load_model()
 
-# Function to preprocess the image
 def preprocess_image(image):
+    """Preprocess the image for model prediction."""
     image = image.resize((299, 299))  # Resize the image to match the input size expected by the model
     image = np.array(image)
     image = image.astype('float32') / 255.0  # Normalize the image to [0, 1]
     image = np.expand_dims(image, axis=0)  # Add a batch dimension
     return image
 
-# Function to predict if an image is deep fake or real
 def predict(image):
+    """Predict if the image is a deep fake or real."""
     global model
     if model is None:
         st.error("Model is not loaded properly. Please check the model file.")
         return None
-
+    
     st.write("Model is loaded. Processing image...")
     processed_image = preprocess_image(image)
     try:
@@ -230,8 +230,8 @@ def predict(image):
         st.error(f"Error during prediction: {e}")
         return None
 
-# Chatbot responses
 def chatbot_response(user_input):
+    """Generate chatbot responses based on user input."""
     user_input = user_input.lower()
     
     responses = {
@@ -254,8 +254,28 @@ def chatbot_response(user_input):
     return responses.get(user_input, "I'm not sure how to respond to that. Could you ask something else?")
 
 # Streamlit app layout
-if st.button('Go to Deepfake-video-destroyed'):
-    st.write("[Click here to go to Google](https://www.google.com)")
+st.set_page_config(page_title="Deep Fake Detector Tool", page_icon="🕵️‍♂️")
+st.write("Tenet Presents")
+
+# Add a banner
+st.markdown("""
+    <style>
+        .banner {
+            background-color: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .banner h1 {
+            color: #343a40;
+            margin: 0;
+        }
+    </style>
+    <div class="banner">
+        <h1>Deep Fake Detector Tool</h1>
+    </div>
+""", unsafe_allow_html=True)
 
 # Chatbot sidebar
 st.sidebar.title('Chatbot Support')
@@ -282,4 +302,3 @@ if uploaded_image is not None:
             st.write('The image is a **DEEP FAKE**.', color='red')
         else:
             st.write('The image is a **Real Image**.', color='green')
-
