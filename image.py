@@ -36,11 +36,8 @@ st.markdown("""
 # except Exception as e:
 #     print(f"Error loading model: {e}")
 
-model = tf.keras.models.load_model('xception_deepfake_image.h5','r')
-if(model):
-    print("Model loaded successfully")
-else:
-    print("error in loading bro!")
+model = tf.keras.models.load_model('xception_deepfake_image.h5')
+
 ## function to preprocess the image
 def preprocess_image(image):
     image = image.resize((299, 299))                       ## resize the image to match the input size expected by the model
