@@ -116,5 +116,4 @@ opencv-python-headless
 numpy
 pillow
 pip==24.2
-joblib
 
